@@ -44,7 +44,7 @@ else
 fi
 
 # Get an auth token for the metered billing API resouce - 20e940b3-4c77-4b0b-9a53-9e16a1b010a7
-METERING_API_TOKEN=$(curl -H $HEADER $METERING_API_TOKEN_URL | jq '.access_token' | sed -e 's/^"//' -e 's/"$//')
+METERING_API_TOKEN=$(curl -H "$HEADER" "$METERING_API_TOKEN_URL" | jq '.access_token' | sed -e 's/^"//' -e 's/"$//')
 METERING_AUTH_HEADER="Authorization:Bearer $METERING_API_TOKEN"
 
 # Call the metered billing API to report a usage event
