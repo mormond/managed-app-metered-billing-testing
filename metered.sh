@@ -19,18 +19,18 @@ else
 fi
 
 # Get an auth token for the ARM API and construct the auth header for the ARM request
-METADATA_TOKEN=$(curl -H "$HEADER" "$METADATA_URL" | jq '.access_token' | sed -e 's/^"//' -e 's/"$//') 
+METADATA_TOKEN=$(curl -H "$HEADER" "$METADATA_URL" | jq -r '.access_token') 
 METADATA_AUTH_HEADER="Authorization:Bearer $METADATA_TOKEN"
 
 # Get instance metadata to extract the subscription and resource group details
 METADATA=$(curl -H $HEADER http://169.254.169.254/metadata/instance?api-version=2019-06-01)
-SUB_ID=$(echo "$METADATA" | jq '.compute.subscriptionId' | sed -e 's/^"//' -e 's/"$//')
-RG_NAME=$(echo "$METADATA" | jq '.compute.resourceGroupName' | sed -e 's/^"//' -e 's/"$//')
+SUB_ID=$(echo "$METADATA" | jq -r '.compute.subscriptionId')
+RG_NAME=$(echo "$METADATA" | jq -r '.compute.resourceGroupName')
 
 # Call the ARM API to get the managed app ID
 MANAGEMENTURL="https://management.azure.com/subscriptions/$SUB_ID/resourceGroups/$RG_NAME?api-version=2019-10-01"
 RG_INFO=$(curl -H "$HEADER" -H "$METADATA_AUTH_HEADER" "$MANAGEMENTURL")
-MANAGED_APP_ID=$(echo "$RG_INFO" | jq '.managedBy' | sed -e 's/^"//' -e 's/"$//')
+MANAGED_APP_ID=$(echo "$RG_INFO" | jq -r '.managedBy')
 
 #
 # Call the metering service to report an event
@@ -44,7 +44,7 @@ else
 fi
 
 # Get an auth token for the metered billing API resouce - 20e940b3-4c77-4b0b-9a53-9e16a1b010a7
-METERING_API_TOKEN=$(curl -H "$HEADER" "$METERING_API_TOKEN_URL" | jq '.access_token' | sed -e 's/^"//' -e 's/"$//')
+METERING_API_TOKEN=$(curl -H "$HEADER" "$METERING_API_TOKEN_URL" | jq -r '.access_token')
 METERING_AUTH_HEADER="Authorization:Bearer $METERING_API_TOKEN"
 
 # Call the metered billing API to report a usage event
